@@ -1,0 +1,163 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// 用户
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  username     String?   @unique
+  passwordHash String
+  avatar       String?
+  level        String    @default("beginner") // beginner, intermediate, advanced
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  posts          Post[]
+  comments       Comment[]
+  likes          Like[]
+  collections    Collection[]
+  simulation     SimulationAccount?
+
+  @@map("users")
+}
+
+// 知识文章
+model Article {
+  id         String   @id @default(cuid())
+  title      String
+  content    String   @db.Text
+  summary    String
+  difficulty String   // beginner, intermediate, advanced, warning
+  category   String
+  tags       String[]
+  readTime   Int      // 阅读时间（分钟）
+  viewCount  Int      @default(0)
+  coverImage String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("articles")
+}
+
+// 社区帖子
+model Post {
+  id           String   @id @default(cuid())
+  title        String
+  content      String   @db.Text
+  images       String[]
+  category     String
+  userId       String
+  likeCount    Int      @default(0)
+  commentCount Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments Comment[]
+  likes    Like[]
+
+  @@map("posts")
+}
+
+// 评论
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("comments")
+}
+
+// 点赞
+model Like {
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@map("likes")
+}
+
+// 收藏
+model Collection {
+  id         String   @id @default(cuid())
+  userId     String
+  articleId  String?
+  postId     String?
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("collections")
+}
+
+// 模拟交易账户
+model SimulationAccount {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  totalAssets Decimal  @default(100000)
+  cashBalance Decimal  @default(100000)
+  profitLoss  Decimal  @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  positions   Position[]
+  transactions Transaction[]
+
+  @@map("simulation_accounts")
+}
+
+// 持仓
+model Position {
+  id         String   @id @default(cuid())
+  accountId  String
+  fundCode   String
+  fundName   String
+  fundType   String // stock, bond, mix, money, index
+  shares     Decimal
+  avgCost    Decimal
+  profitLoss Decimal  @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  account SimulationAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@map("positions")
+}
+
+// 交易记录
+model Transaction {
+  id           String   @id @default(cuid())
+  accountId    String
+  fundCode     String
+  fundName     String
+  fundType     String
+  type         String // buy, sell
+  shares       Decimal
+  price        Decimal
+  totalAmount  Decimal
+  createdAt    DateTime @default(now())
+
+  account SimulationAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@map("transactions")
+}
