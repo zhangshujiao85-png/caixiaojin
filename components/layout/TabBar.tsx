@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Calculator, Users, User } from "lucide-react";
+import { Home, Users, User, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabItems = [
   { href: "/", label: "首页", icon: Home },
-  { href: "/tools", label: "工具", icon: Calculator },
+  { href: "/tools/finance-center", label: "财务", icon: Wallet },
   { href: "/community", label: "社区", icon: Users },
   { href: "/profile", label: "我的", icon: User },
 ];
@@ -20,7 +20,7 @@ export function TabBar() {
       <div className="flex items-center justify-around h-16">
         {tabItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href;
+          const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
           return (
             <Link
               key={item.href}

@@ -101,4 +101,18 @@
   .animate-spin-slow {
     animation: spin-slow 8s linear infinite;
   }
+
+  /* 慢速脉冲 */
+  @keyframes pulse-slow {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
+  }
+
+  .animate-pulse-slow {
+    animation: pulse-slow 2s ease-in-out infinite;
+  }
 }

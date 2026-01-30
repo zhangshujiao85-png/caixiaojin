@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Calculator, Users, User, Menu, LogOut, UserCircle } from "lucide-react";
+import { Home, Users, User, Menu, LogOut, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,10 +15,9 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/store/useAuth";
 
 const navItems = [
-  { href: "/", label: "首页", icon: Home },
-  { href: "/tools", label: "工具", icon: Calculator },
-  { href: "/community", label: "社区", icon: Users },
-  { href: "/profile", label: "我的", icon: User },
+  { href: "/", label: "启航", icon: Home },
+  { href: "/community", label: "她说", icon: Users },
+  { href: "/profile", label: "秘密花园", icon: User },
 ];
 
 export function Header() {

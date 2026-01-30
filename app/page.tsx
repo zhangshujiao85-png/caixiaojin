@@ -4,12 +4,18 @@ import { useState } from "react";
 import { Sparkles } from "lucide-react";
 import { FundTree, PiggyBankGirl, MoneyBag, CoinStack } from "@/components/illustrations";
 import { KnowledgeTreasure } from "@/components/home/KnowledgeTreasure";
-import { DailyCheckIn } from "@/components/home/DailyCheckIn";
-import { AchievementWall } from "@/components/home/AchievementWall";
-import { DailyQuote } from "@/components/home/DailyQuote";
-import { LearningPath } from "@/components/home/LearningPath";
-import { WeeklyChallenge } from "@/components/home/WeeklyChallenge";
-import { TodayTask } from "@/components/home/TodayTask";
+import { DailyCheckInModal } from "@/components/home/DailyCheckInModal";
+import { AnxietyReliefCard } from "@/components/home/AnxietyReliefCard";
+import { WishCalculatorCard } from "@/components/home/WishCalculatorCard";
+import { SimulationCard } from "@/components/home/SimulationCard";
+import { FinanceCenterCard } from "@/components/home/FinanceCenterCard";
+import { AnxietyReliefWrapper } from "@/components/home/AnxietyReliefWrapper";
+import { SimulationModal } from "@/components/home/SimulationCard";
+import { WishCalculatorModal } from "@/components/home/WishCalculatorModal";
+import { FinanceCenterModal } from "@/components/home/FinanceCenterModal";
+import { DailyCheckInButton } from "@/components/home/DailyCheckInButton";
+import { DictionaryCard } from "@/components/home/DictionaryCard";
+import { DictionaryModal } from "@/components/home/DictionaryModal";
 import { useLearningProgress } from "@/store/useLearningProgress";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -218,6 +224,14 @@ export default function HomePage() {
   const [articles, setArticles] = useState(getDailyArticles());
   const { completeArticle } = useLearningProgress();
 
+  // 弹窗状态
+  const [dailyCheckInOpen, setDailyCheckInOpen] = useState(false);
+  const [anxietyReliefOpen, setAnxietyReliefOpen] = useState(false);
+  const [simulationOpen, setSimulationOpen] = useState(false);
+  const [wishCalculatorOpen, setWishCalculatorOpen] = useState(false);
+  const [financeCenterOpen, setFinanceCenterOpen] = useState(false);
+  const [dictionaryOpen, setDictionaryOpen] = useState(false);
+
   const handleUnlock = (id: string) => {
     const article = articles.find((a) => a.id === id);
     if (article) {
@@ -237,7 +251,7 @@ export default function HomePage() {
         {/* Slogan Bar */}
         <div className="bg-gradient-to-r from-macaron-pink via-macaron-purple to-macaron-blue py-3 px-4 text-center">
           <p className="text-white font-cute text-sm md:text-base drop-shadow-md">
-            🌸 奶茶钱也能攒出小金库 | 女生的基金入门指南 🌸
+            💫 财务自由的起点，是知识自由。而你，已稳健启程。 ✨
           </p>
         </div>
 
@@ -266,54 +280,113 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 今日宝箱 Section */}
-      <section id="articles" className="py-2 md:py-3 relative -mt-14 md:-mt-20">
+      {/* 知识宝箱区域 - 可爱边框包裹 */}
+      <section className="py-2 md:py-4 relative -mt-14 md:-mt-20">
         <div className="container mx-auto px-4 md:px-6">
-          {/* 宝箱网格 - 悦投风格横向滚动 */}
-          <div className="relative mb-6">
-            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
-              {articles.map((article) => (
-                <KnowledgeTreasure
-                  key={article.id}
-                  box={article}
-                  onUnlock={handleUnlock}
-                />
-              ))}
+          {/* 可爱边框容器 */}
+          <div className="relative bg-gradient-to-br from-macaron-cream/50 via-macaron-pink/10 to-macaron-purple/10 rounded-3xl p-4 md:p-6 border-4 border-dashed border-macaron-pink/40 shadow-lg">
+
+            {/* 装饰性emoji - 左上 */}
+            <div className="absolute -top-3 -left-3 text-4xl animate-bounce" style={{ animationDuration: "2s" }}>
+              ✨
+            </div>
+            {/* 装饰性emoji - 右上 */}
+            <div className="absolute -top-3 -right-3 text-4xl animate-bounce" style={{ animationDuration: "2.5s" }}>
+              💫
+            </div>
+            {/* 装饰性emoji - 左下 */}
+            <div className="absolute -bottom-3 -left-3 text-4xl animate-bounce" style={{ animationDuration: "2.2s" }}>
+              🌸
+            </div>
+            {/* 装饰性emoji - 右下 */}
+            <div className="absolute -bottom-3 -right-3 text-4xl animate-bounce" style={{ animationDuration: "2.8s" }}>
+              🎀
+            </div>
+
+            {/* 今日宝箱 Section */}
+            <div id="articles" className="relative mb-4">
+              {/* 宝箱网格 - 悦投风格横向滚动 */}
+              <div className="relative">
+                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
+                  {articles.map((article) => (
+                    <KnowledgeTreasure
+                      key={article.id}
+                      box={article}
+                      onUnlock={handleUnlock}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {articles.length === 0 && (
+                <div className="text-center py-12">
+                  <PiggyBankGirl size={80} className="mx-auto mb-4 opacity-50" />
+                  <p className="text-gray-500 font-cute text-lg">暂无相关内容</p>
+                </div>
+              )}
+            </div>
+
+            {/* 小白术语词典 */}
+            <div className="mt-4">
+              <DictionaryCard onClick={() => setDictionaryOpen(true)} />
             </div>
           </div>
-
-          {articles.length === 0 && (
-            <div className="text-center py-12">
-              <PiggyBankGirl size={80} className="mx-auto mb-4 opacity-50" />
-              <p className="text-gray-500 font-cute text-lg">暂无相关内容</p>
-            </div>
-          )}
         </div>
       </section>
 
-      {/* 其他组件 Section */}
+      {/* 功能卡片 Section - 四大功能 2×2 Grid */}
       <section className="py-4 md:py-6 relative">
         <div className="container mx-auto px-4 md:px-6">
-          {/* 每日签到 + 每日一签 + 今日任务 */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <DailyCheckIn onCheckIn={(points) => {
-              const { addPoints } = useLearningProgress.getState();
-              addPoints(points, "签到奖励");
-            }} />
-            <DailyQuote />
-            <TodayTask onAccept={() => {
-              const { addPoints } = useLearningProgress.getState();
-              addPoints(15, "价值判断");
-            }} />
-          </div>
+          {/* 可爱边框容器 */}
+          <div className="relative bg-gradient-to-br from-macaron-cream/50 via-macaron-pink/10 to-macaron-purple/10 rounded-3xl p-4 md:p-6 border-4 border-dashed border-macaron-pink/40 shadow-lg">
 
-          {/* 学习路径 + 成就墙 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <LearningPath completedArticles={[]} />
-            <AchievementWall />
+            {/* 装饰性emoji - 左上 */}
+            <div className="absolute -top-3 -left-3 text-4xl animate-bounce" style={{ animationDuration: "2s" }}>
+              🌟
+            </div>
+            {/* 装饰性emoji - 右上 */}
+            <div className="absolute -top-3 -right-3 text-4xl animate-bounce" style={{ animationDuration: "2.5s" }}>
+              ⭐
+            </div>
+            {/* 装饰性emoji - 左下 */}
+            <div className="absolute -bottom-3 -left-3 text-4xl animate-bounce" style={{ animationDuration: "2.2s" }}>
+              💖
+            </div>
+            {/* 装饰性emoji - 右下 */}
+            <div className="absolute -bottom-3 -right-3 text-4xl animate-bounce" style={{ animationDuration: "2.8s" }}>
+              🎈
+            </div>
+
+            {/* 区域标题 */}
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <span className="text-2xl">🎯</span>
+              <h2 className="text-xl font-bold text-gray-800 font-cute">
+                实用工具
+              </h2>
+              <span className="text-2xl">🛠️</span>
+            </div>
+
+            {/* 四大功能卡片 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <AnxietyReliefCard onClick={() => setAnxietyReliefOpen(true)} />
+              <WishCalculatorCard onClick={() => setWishCalculatorOpen(true)} />
+              <SimulationCard onClick={() => setSimulationOpen(true)} />
+              <FinanceCenterCard onClick={() => setFinanceCenterOpen(true)} />
+            </div>
           </div>
         </div>
       </section>
+
+      {/* 弹窗组件 */}
+      <DailyCheckInModal open={dailyCheckInOpen} onOpenChange={setDailyCheckInOpen} />
+      <AnxietyReliefWrapper open={anxietyReliefOpen} onOpenChange={setAnxietyReliefOpen} />
+      <SimulationModal open={simulationOpen} onOpenChange={setSimulationOpen} />
+      <WishCalculatorModal open={wishCalculatorOpen} onOpenChange={setWishCalculatorOpen} />
+      <FinanceCenterModal open={financeCenterOpen} onOpenChange={setFinanceCenterOpen} />
+      <DictionaryModal open={dictionaryOpen} onOpenChange={setDictionaryOpen} />
+
+      {/* 浮动签到按钮 */}
+      <DailyCheckInButton onClick={() => setDailyCheckInOpen(true)} />
     </div>
   );
 }

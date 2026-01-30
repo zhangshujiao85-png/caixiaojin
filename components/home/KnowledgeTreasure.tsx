@@ -48,13 +48,13 @@ export function KnowledgeTreasure({ box, onUnlock }: KnowledgeTreasureProps) {
   const getBoxColor = () => {
     switch (box.difficulty) {
       case "beginner":
-        return "from-pink-200 via-pink-100 to-pink-200";
+        return "from-macaron-pink/60 via-macaron-pink/40 to-macaron-pink/60";
       case "intermediate":
-        return "from-purple-200 via-purple-100 to-purple-200";
+        return "from-macaron-purple/60 via-macaron-purple/40 to-macaron-purple/60";
       case "warning":
-        return "from-blue-200 via-blue-100 to-blue-200";
+        return "from-macaron-blue/60 via-macaron-blue/40 to-macaron-blue/60";
       default:
-        return "from-green-200 via-green-100 to-green-200";
+        return "from-macaron-green/60 via-macaron-green/40 to-macaron-green/60";
     }
   };
 
@@ -111,89 +111,89 @@ export function KnowledgeTreasure({ box, onUnlock }: KnowledgeTreasureProps) {
           isOpening && "animate-pulse"
         )}
       >
-        {/* 未解锁状态 - 可爱动画风格 */}
+        {/* 未解锁状态 - 低饱和度可爱卡通风格 */}
         {!box.isUnlocked && !isOpening && (
           <div
             className={cn(
-              "relative w-full aspect-square rounded-3xl bg-gradient-to-br",
+              "relative w-full aspect-square rounded-[2rem] bg-gradient-to-br",
               getBoxColor(),
-              "shadow-lg hover:shadow-2xl transition-all duration-300",
+              "shadow-xl hover:shadow-2xl transition-all duration-300",
               "hover:scale-105 active:scale-95",
-              "flex flex-col items-center justify-center p-4",
-              "border-4 border-white/50 overflow-hidden",
+              "flex flex-col items-center justify-center p-3",
+              "border-4 border-white/60 overflow-hidden",
               "group"
             )}
           >
-            {/* 光泽扫过效果 */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent animate-shimmer" />
+            {/* 卡通边框装饰 - 虚线 */}
+            <div className="absolute inset-2 rounded-[1.5rem] border-2 border-dashed border-white/40 pointer-events-none" />
 
-            {/* 浮动装饰元素 */}
+            {/* 浮动装饰元素 - 更小更可爱 */}
             {getDecorations().map((deco, i) => (
               <div
                 key={i}
-                className="absolute text-xl md:text-2xl animate-float pointer-events-none"
+                className="absolute text-lg md:text-xl opacity-70 pointer-events-none"
                 style={{
                   top: deco.top,
                   left: deco.left,
                   right: deco.right,
                   bottom: deco.bottom,
+                  animation: `float ${2 + i * 0.3}s ease-in-out infinite`,
                   animationDelay: deco.delay,
-                  animationDuration: `${2 + i * 0.3}s`,
                 }}
               >
                 {deco.icon}
               </div>
             ))}
 
-            {/* 主礼物盒子 - 多重动画 */}
+            {/* 主礼物盒子 - 卡通可爱风格 */}
             <div className="relative z-10 flex flex-col items-center">
-              {/* 礼物emoji - 组合动画 */}
-              <div className="relative mb-3">
+              {/* 礼物emoji - 可爱弹跳 */}
+              <div className="relative mb-2">
                 {/* 外圈光晕 */}
-                <div className="absolute inset-0 rounded-full bg-white/30 blur-xl animate-ping opacity-75" />
+                <div className="absolute inset-0 rounded-full bg-white/20 blur-2xl animate-pulse" />
 
-                {/* 礼物本体 - 弹跳+旋转 */}
+                {/* 礼物本体 */}
                 <div
-                  className="text-6xl md:text-7xl relative animate-bounce-glow"
-                  style={{ animationDuration: "2.5s" }}
+                  className="text-5xl md:text-6xl relative"
+                  style={{ animation: "bounce 2s ease-in-out infinite" }}
                 >
                   🎁
                 </div>
 
                 {/* 旋转星光 */}
-                <div className="absolute -top-2 -right-2 text-2xl animate-spin-slow">
+                <div className="absolute -top-1 -right-1 text-lg animate-spin-slow opacity-80">
                   ✨
                 </div>
-                <div className="absolute -bottom-1 -left-2 text-xl animate-spin-slow-reverse">
+                <div className="absolute -bottom-1 -left-1 text-base animate-spin-slow-reverse opacity-70">
                   ⭐
                 </div>
               </div>
 
-              {/* 标题 - 渐变文字 */}
-              <h3 className="text-white font-cute font-bold text-base mb-1.5 text-center drop-shadow-lg">
+              {/* 标题 */}
+              <h3 className="text-white font-cute font-bold text-sm mb-1 text-center drop-shadow-md">
                 知识宝箱
               </h3>
 
-              {/* 副标题 - 闪烁效果 */}
-              <p className="text-white/95 text-xs text-center mb-2 font-medium drop-shadow-md animate-pulse-slow">
+              {/* 副标题 */}
+              <p className="text-white/90 text-xs text-center mb-1 font-medium drop-shadow-sm">
                 ✨ 点击开启惊喜 ✨
               </p>
 
               {/* 描述 */}
-              <p className="text-white/90 text-xs text-center leading-tight drop-shadow-sm">
-                发现今日的财富智慧
+              <p className="text-white/85 text-xs text-center leading-tight drop-shadow-sm px-1">
+                发现财富智慧
               </p>
             </div>
 
-            {/* 底部装饰 - 脉冲效果 */}
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2">
-              <span className="text-lg animate-bounce" style={{ animationDuration: "1.5s" }}>
+            {/* 底部装饰 */}
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+              <span className="text-sm" style={{ animation: "bounce 1.5s ease-in-out infinite" }}>
                 💎
               </span>
-              <span className="text-lg animate-bounce" style={{ animationDuration: "1.8s", animationDelay: "0.2s" }}>
+              <span className="text-sm" style={{ animation: "bounce 1.8s ease-in-out infinite", animationDelay: "0.2s" }}>
                 ⭐
               </span>
-              <span className="text-lg animate-bounce" style={{ animationDuration: "2s", animationDelay: "0.4s" }}>
+              <span className="text-sm" style={{ animation: "bounce 2s ease-in-out infinite", animationDelay: "0.4s" }}>
                 💎
               </span>
             </div>
@@ -204,23 +204,20 @@ export function KnowledgeTreasure({ box, onUnlock }: KnowledgeTreasureProps) {
         {isOpening && (
           <div
             className={cn(
-              "relative w-full aspect-square rounded-3xl bg-gradient-to-br",
+              "relative w-full aspect-square rounded-[2rem] bg-gradient-to-br",
               getBoxColor(),
-              "shadow-lg flex flex-col items-center justify-center p-4",
-              "border-4 border-white/50 overflow-hidden"
+              "shadow-xl flex flex-col items-center justify-center p-3",
+              "border-4 border-white/60 overflow-hidden"
             )}
           >
-            {/* 光泽效果 */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent animate-shimmer" />
-
             {/* 旋转装饰 */}
-            <div className="absolute top-3 left-3 text-xl animate-spin-slow">✨</div>
-            <div className="absolute top-3 right-3 text-xl animate-spin-slow-reverse">⭐</div>
-            <div className="absolute bottom-3 left-3 text-xl animate-spin-slow-reverse">💫</div>
-            <div className="absolute bottom-3 right-3 text-xl animate-spin-slow">✨</div>
+            <div className="absolute top-2 left-2 text-lg animate-spin-slow opacity-60">✨</div>
+            <div className="absolute top-2 right-2 text-lg animate-spin-slow-reverse opacity-60">⭐</div>
+            <div className="absolute bottom-2 left-2 text-lg animate-spin-slow-reverse opacity-60">💫</div>
+            <div className="absolute bottom-2 right-2 text-lg animate-spin-slow opacity-60">✨</div>
 
-            <div className="relative z-10 flex flex-col items-center gap-3">
-              <Sparkles className="w-16 h-16 text-white animate-spin drop-shadow-2xl" />
+            <div className="relative z-10 flex flex-col items-center gap-2">
+              <Sparkles className="w-12 h-12 text-white animate-spin drop-shadow-xl" />
               <p className="text-white font-cute text-sm drop-shadow-md animate-pulse font-medium">
                 ✨ 开启中... ✨
               </p>
@@ -232,31 +229,28 @@ export function KnowledgeTreasure({ box, onUnlock }: KnowledgeTreasureProps) {
         {box.isUnlocked && !isOpening && (
           <div
             className={cn(
-              "relative w-full aspect-square rounded-3xl bg-gradient-to-br",
+              "relative w-full aspect-square rounded-[2rem] bg-gradient-to-br",
               getBoxColor(),
-              "shadow-lg hover:shadow-2xl transition-all duration-300",
+              "shadow-xl hover:shadow-2xl transition-all duration-300",
               "hover:scale-105 active:scale-95",
-              "flex flex-col items-center justify-center p-4",
-              "border-4 border-white/50 overflow-hidden",
+              "flex flex-col items-center justify-center p-3",
+              "border-4 border-white/60 overflow-hidden",
               "cursor-pointer group"
             )}
           >
-            {/* 光泽效果 */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent opacity-50" />
-
             {/* 装饰元素 */}
-            <div className="absolute top-2 left-2 text-lg opacity-60 animate-float">✨</div>
-            <div className="absolute top-2 right-2 text-lg opacity-60 animate-float" style={{ animationDelay: "0.5s" }}>⭐</div>
-            <div className="absolute bottom-2 left-2 text-lg opacity-60 animate-float" style={{ animationDelay: "1s" }}>💫</div>
-            <div className="absolute bottom-2 right-2 text-lg opacity-60 animate-float" style={{ animationDelay: "1.5s" }}>✨</div>
+            <div className="absolute top-2 left-2 text-base opacity-50" style={{animation: 'float 3s ease-in-out infinite'}}>✨</div>
+            <div className="absolute top-2 right-2 text-base opacity-50" style={{animation: 'float 3s ease-in-out infinite', animationDelay: '0.5s'}}>⭐</div>
+            <div className="absolute bottom-2 left-2 text-base opacity-50" style={{animation: 'float 3s ease-in-out infinite', animationDelay: '1s'}}>💫</div>
+            <div className="absolute bottom-2 right-2 text-base opacity-50" style={{animation: 'float 3s ease-in-out infinite', animationDelay: '1.5s'}}>✨</div>
 
             <div className="relative z-10 flex flex-col items-center">
-              <CheckCircle2 className="w-8 h-8 text-white mb-2 drop-shadow-lg" />
-              <p className="text-white font-cute text-xs text-center drop-shadow-md font-bold leading-tight px-2">
-                {box.title}
+              <CheckCircle2 className="w-6 h-6 text-white mb-1 drop-shadow-md" />
+              <p className="text-white font-cute text-xs text-center drop-shadow-sm font-bold leading-tight px-2">
+                {box.title.length > 8 ? box.title.substring(0, 8) + "..." : box.title}
               </p>
-              <div className="flex items-center gap-1 bg-white/40 backdrop-blur-sm rounded-full px-3 py-1 mt-2 shadow-md">
-                <CheckCircle2 className="w-3 h-3 text-white" />
+              <div className="flex items-center gap-1 bg-white/40 backdrop-blur-sm rounded-full px-2 py-0.5 mt-1 shadow-sm">
+                <CheckCircle2 className="w-2.5 h-2.5 text-white" />
                 <span className="text-white text-xs font-medium">已学习</span>
               </div>
             </div>

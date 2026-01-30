@@ -16,12 +16,15 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useLearningProgress } from "@/store/useLearningProgress";
+import { useDailyCheckInStore } from "@/store/useDailyCheckInStore";
+import { dailyQuotes } from "@/data/dailyQuotes";
 
 export default function ProfilePage() {
-  const [activeTab, setActiveTab] = useState<"collections" | "posts" | "portfolio" | "following">(
+  const [activeTab, setActiveTab] = useState<"collections" | "posts" | "portfolio" | "following" | "quotes">(
     "collections"
   );
   const { totalPoints, level, currentLevelProgress, todayPoints, skills } = useLearningProgress();
+  const { favoriteQuotes, toggleFavorite, isFavorite } = useDailyCheckInStore();
 
   // Mock data
   const user = {
@@ -95,13 +98,40 @@ export default function ProfilePage() {
     { value: "collections", label: "我的收藏", icon: BookOpen },
     { value: "posts", label: "我的发布", icon: MessageSquare },
     { value: "portfolio", label: "我的组合", icon: TrendingUp },
+    { value: "quotes", label: "收藏的句子", icon: Heart },
   ];
 
   return (
-    <div className="min-h-screen py-8 md:py-12">
+    <div className="min-h-screen py-8 md:py-12 relative">
+      {/* 花草装饰 - 左上角 */}
+      <div className="fixed top-20 left-4 text-5xl animate-pulse-slow z-10 hidden md:block" style={{ animationDuration: "3s" }}>
+        🌸
+      </div>
+      {/* 花草装饰 - 右上角 */}
+      <div className="fixed top-20 right-4 text-5xl animate-pulse-slow z-10 hidden md:block" style={{ animationDuration: "3.5s" }}>
+        🌺
+      </div>
+      {/* 花草装饰 - 左下角 */}
+      <div className="fixed bottom-8 left-4 text-4xl animate-bounce z-10 hidden md:block" style={{ animationDuration: "2.5s" }}>
+        🌷
+      </div>
+      {/* 花草装饰 - 右下角 */}
+      <div className="fixed bottom-8 right-4 text-4xl animate-bounce z-10 hidden md:block" style={{ animationDuration: "3s" }}>
+        🌻
+      </div>
+
       <div className="container mx-auto px-4 md:px-6">
-        {/* Profile Header */}
-        <Card className="mb-6 border-macaron-pink/20">
+        {/* Profile Header - 带花朵装饰 */}
+        <Card className="mb-6 border-macaron-pink/20 relative">
+          {/* 装饰花朵 - 卡片左上 */}
+          <div className="absolute -top-4 -left-2 text-4xl">🌸</div>
+          {/* 装饰花朵 - 卡片右上 */}
+          <div className="absolute -top-4 -right-2 text-4xl">💐</div>
+          {/* 装饰藤蔓 - 卡片左下 */}
+          <div className="absolute -bottom-3 -left-2 text-3xl">🌿</div>
+          {/* 装饰花朵 - 卡片右下 */}
+          <div className="absolute -bottom-3 -right-2 text-3xl">🌼</div>
+
           <CardContent className="p-6">
             <div className="flex items-start gap-6">
               <Avatar className="w-20 h-20">
@@ -220,7 +250,12 @@ export default function ProfilePage() {
         </div>
 
         {/* Content Tabs */}
-        <Card className="border-macaron-pink/20">
+        <Card className="border-macaron-pink/20 relative">
+          {/* 装饰花朵 - 卡片左上 */}
+          <div className="absolute -top-3 -left-2 text-3xl">🌸</div>
+          {/* 装饰花朵 - 卡片右上 */}
+          <div className="absolute -top-3 -right-2 text-3xl">🌺</div>
+
           <CardHeader>
             <div className="flex gap-2 border-b border-gray-200">
               {tabs.map((tab) => {
@@ -358,6 +393,63 @@ export default function ProfilePage() {
                     </p>
                   </div>
                 )}
+              </div>
+            )}
+
+            {activeTab === "quotes" && (
+              <div>
+                <div className="grid grid-cols-1 gap-4">
+                  {favoriteQuotes.length === 0 ? (
+                    <div className="text-center py-12 relative">
+                      {/* 花朵装饰 */}
+                      <div className="absolute top-4 left-8 text-3xl animate-pulse-slow">🌸</div>
+                      <div className="absolute top-4 right-8 text-3xl animate-pulse-slow" style={{ animationDuration: "2s" }}>🌺</div>
+                      <div className="absolute bottom-4 left-12 text-2xl animate-bounce" style={{ animationDuration: "2.5s" }}>🌷</div>
+                      <div className="absolute bottom-4 right-12 text-2xl animate-bounce" style={{ animationDuration: "3s" }}>🌼</div>
+
+                      <Heart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-500 mb-2">还没有收藏任何句子</p>
+                      <p className="text-sm text-gray-400">
+                        去主页签到，发现喜欢的句子并收藏吧～
+                      </p>
+                    </div>
+                  ) : (
+                    favoriteQuotes.map((quoteId) => {
+                      const quote = dailyQuotes.find((q) => q.id === quoteId);
+                      if (!quote) return null;
+
+                      return (
+                        <div
+                          key={quote.id}
+                          className="p-6 bg-gradient-to-br from-macaron-cream to-macaron-pink/10 rounded-2xl border-2 border-macaron-pink/20 relative hover:shadow-md transition-all"
+                        >
+                          <button
+                            onClick={() => toggleFavorite(quote.id)}
+                            className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center transition-all bg-macaron-pink text-white shadow-md hover:scale-110"
+                            title="取消收藏"
+                          >
+                            <Heart className="w-4 h-4 fill-current" />
+                          </button>
+
+                          <div className="text-4xl mb-3">{quote.emoji}</div>
+
+                          <p className="text-lg text-gray-800 font-cute leading-relaxed mb-3">
+                            "{quote.quote}"
+                          </p>
+
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm text-gray-500">—— {quote.author}</p>
+                            <div className="flex gap-2">
+                              <span className="text-xs bg-macaron-pink/20 text-macaron-pink px-2 py-1 rounded-full">
+                                {quote.category}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
               </div>
             )}
           </CardContent>

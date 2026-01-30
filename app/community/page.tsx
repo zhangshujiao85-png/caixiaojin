@@ -7,7 +7,7 @@ import { CreatePostDialog } from "@/components/community/CreatePostDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Search, Plus, Filter, Star, TrendingUp, Award } from "lucide-react";
+import { Search, Plus, Filter } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/store/useAuth";
 
@@ -140,14 +140,32 @@ export default function CommunityPage() {
   });
 
   return (
-    <div className="min-h-screen py-8 md:py-12">
+    <div className="min-h-screen py-8 md:py-12 relative">
+      {/* 四角装饰 - 桌面端 */}
+      <div className="fixed top-20 left-4 text-4xl animate-bounce z-10 hidden md:block" style={{ animationDuration: "3s" }}>
+        💬
+      </div>
+      <div className="fixed top-20 right-4 text-4xl animate-bounce z-10 hidden md:block" style={{ animationDuration: "3.5s" }}>
+        ✨
+      </div>
+      <div className="fixed bottom-8 left-4 text-3xl animate-pulse-slow z-10 hidden md:block" style={{ animationDuration: "2.5s" }}>
+        💕
+      </div>
+      <div className="fixed bottom-8 right-4 text-3xl animate-pulse-slow z-10 hidden md:block" style={{ animationDuration: "3s" }}>
+        🎀
+      </div>
+
       <div className="container mx-auto px-4 md:px-6">
         {/* Header */}
-        <div className="mb-6 md:mb-8">
+        <div className="mb-6 md:mb-8 relative">
+          {/* 标题装饰 */}
+          <div className="absolute -top-2 -left-2 text-2xl animate-bounce" style={{ animationDuration: "2s" }}>🌟</div>
+          <div className="absolute -top-2 -right-2 text-2xl animate-bounce" style={{ animationDuration: "2.5s" }}>✨</div>
+
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-                理财社区
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2 flex items-center gap-2">
+                💬 理财社区
               </h1>
               <p className="text-gray-600">
                 和小伙伴一起交流心得，分享经验
@@ -224,47 +242,6 @@ export default function CommunityPage() {
           </div>
         </div>
 
-        {/* 基金经理评分入口 */}
-        <Card
-          className="mb-8 border-2 border-macaron-pink/30 overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-r from-macaron-pink/10 via-macaron-cream to-macaron-yellow/10"
-          onClick={() => router.push("/community/fund-manager-rating")}
-        >
-          <div className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-macaron-pink to-macaron-purple flex items-center justify-center shadow-lg">
-                  <Star className="w-8 h-8 text-white fill-white" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-800 font-cute mb-1">
-                    ⭐ 基金经理评分
-                  </h2>
-                  <p className="text-gray-600">为你信赖的基金经理打分，看看谁最受欢迎~</p>
-                </div>
-              </div>
-              <div className="hidden md:flex items-center gap-3">
-                <div className="text-center">
-                  <div className="flex items-center gap-1 text-macaron-green">
-                    <TrendingUp className="w-4 h-4" />
-                    <span className="font-bold">30+</span>
-                  </div>
-                  <p className="text-xs text-gray-500">基金经理</p>
-                </div>
-                <div className="text-center">
-                  <div className="flex items-center gap-1 text-macaron-yellow">
-                    <Award className="w-4 h-4" />
-                    <span className="font-bold">真实</span>
-                  </div>
-                  <p className="text-xs text-gray-500">用户评价</p>
-                </div>
-                <Button className="bg-macaron-pink hover:bg-macaron-pink/90 text-white font-cute">
-                  立即评分 →
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Card>
-
         {/* Posts Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredPosts.map((post) => (
@@ -273,15 +250,29 @@ export default function CommunityPage() {
         </div>
 
         {filteredPosts.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500">暂无相关帖子</p>
+          <div className="text-center py-12 relative">
+            {/* 空状态装饰 */}
+            <div className="absolute top-4 left-8 text-3xl animate-pulse-slow">💭</div>
+            <div className="absolute top-4 right-8 text-3xl animate-pulse-slow" style={{ animationDuration: "2s" }}>🌸</div>
+            <div className="absolute bottom-4 left-12 text-2xl animate-bounce" style={{ animationDuration: "2.5s" }}>✨</div>
+            <div className="absolute bottom-4 right-12 text-2xl animate-bounce" style={{ animationDuration: "3s" }}>💫</div>
+
+            <div className="mb-4">
+              <div className="text-6xl mb-4">🦗</div>
+              <p className="text-gray-500">暂无相关帖子</p>
+              <p className="text-sm text-gray-400 mt-2">快来发布第一条帖子吧～</p>
+            </div>
           </div>
         )}
       </div>
 
       {/* 用户故事/案例 Section */}
-      <section className="py-8 md:py-12 bg-gradient-to-br from-macaron-pink/10 to-macaron-purple/10">
+      <section className="py-8 md:py-12 bg-gradient-to-br from-macaron-pink/10 to-macaron-purple/10 relative">
         <div className="container mx-auto px-4 md:px-6">
+          {/* 区域装饰 */}
+          <div className="absolute -top-3 -left-2 text-3xl animate-bounce" style={{ animationDuration: "2.5s" }}>🌸</div>
+          <div className="absolute -top-3 -right-2 text-3xl animate-bounce" style={{ animationDuration: "3s" }}>💐</div>
+
           <div className="mb-6 text-center">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2 font-cute">
               💬 用户故事
@@ -332,8 +323,12 @@ export default function CommunityPage() {
       </section>
 
       {/* 热门话题榜单 */}
-      <section className="py-8 md:py-12">
+      <section className="py-8 md:py-12 relative">
         <div className="container mx-auto px-4 md:px-6">
+          {/* 区域装饰 */}
+          <div className="absolute -top-3 -left-2 text-3xl animate-pulse-slow">🔥</div>
+          <div className="absolute -top-3 -right-2 text-3xl animate-pulse-slow" style={{ animationDuration: "2.5s" }}>⭐</div>
+
           <div className="mb-6 text-center">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2 font-cute">
               🔥 热门话题
