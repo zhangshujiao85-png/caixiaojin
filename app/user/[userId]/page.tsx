@@ -9,6 +9,16 @@ import { ArrowLeft, Heart, MessageSquare, Calendar, UserCheck, UserPlus } from "
 import { PostCard, Post } from "@/components/community/PostCard";
 import { useAuth } from "@/store/useAuth";
 
+// 为静态导出生成参数
+export async function generateStaticParams() {
+  return [
+    { userId: "user1" },
+    { userId: "user2" },
+    { userId: "user3" },
+    { userId: "user4" },
+  ];
+}
+
 // Mock user data
 const mockUsers: Record<string, any> = {
   user1: {
