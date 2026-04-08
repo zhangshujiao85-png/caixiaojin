@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,8 +18,6 @@ import {
   Sparkles,
   ArrowLeft,
   Activity,
-  Store,
-  Search,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -28,19 +25,16 @@ import { cn } from "@/lib/utils";
 interface FundData {
   code: string;
   name: string;
+  etf_code: string;
+  etf_name: string;
   type: string;
-  desc: string;
-  risk_level: string;
   latest_nav: number;
   latest_change: number;
-  returns: {
-    daily_return: number;
-    weekly_return: number;
-    monthly_return: number;
-    quarterly_return: number;
-    max_drawdown: number;
-    volatility: number;
-  };
+  history: {
+    date: string;
+    nav: number;
+    change: number;
+  }[];
 }
 
 // 交易记录类型
@@ -60,7 +54,6 @@ interface Position {
   fundCode: string;
   fundName: string;
   fundType: string;
-  riskLevel: string;
   amount: number;
   shares: number;
   currentNav: number;
@@ -69,9 +62,6 @@ interface Position {
 }
 
 export default function SimulationPage() {
-  const searchParams = useSearchParams();
-  const preselectedFund = searchParams.get("fund");
-
   const [showGuide, setShowGuide] = useState(false);
   const [guideStep, setGuideStep] = useState(0);
   const [cashBalance, setCashBalance] = useState(100000);
@@ -79,15 +69,12 @@ export default function SimulationPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [activeTab, setActiveTab] = useState<"home" | "positions" | "history">("home");
   const [buyAmount, setBuyAmount] = useState("");
-  const [selectedFund, setSelectedFund] = useState<string>(preselectedFund || "");
+  const [selectedFund, setSelectedFund] = useState("");
   const [showBuySuccess, setShowBuySuccess] = useState(false);
 
   // 基金数据状态
   const [fundsData, setFundsData] = useState<Record<string, FundData>>({});
-  const [fundsList, setFundsList] = useState<FundData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [showFundSelector, setShowFundSelector] = useState(false);
 
   // 加载基金数据
   useEffect(() => {
@@ -98,7 +85,6 @@ export default function SimulationPage() {
 
         if (result.success && result.data.funds) {
           setFundsData(result.data.funds);
-          setFundsList(Object.values(result.data.funds));
         } else {
           console.error("获取基金数据失败:", result.error);
         }
@@ -116,15 +102,15 @@ export default function SimulationPage() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const hasSeenGuide = localStorage.getItem("hasSeenSimulationGuide_v2");
+    const hasSeenGuide = localStorage.getItem("hasSeenSimulationGuide");
     if (!hasSeenGuide) {
       setShowGuide(true);
     }
 
     // 从 localStorage 加载持仓和交易记录
-    const savedPositions = localStorage.getItem("simulationPositions_v2");
-    const savedTransactions = localStorage.getItem("simulationTransactions_v2");
-    const savedCashBalance = localStorage.getItem("simulationCashBalance_v2");
+    const savedPositions = localStorage.getItem("simulationPositions");
+    const savedTransactions = localStorage.getItem("simulationTransactions");
+    const savedCashBalance = localStorage.getItem("simulationCashBalance");
 
     if (savedPositions) setPositions(JSON.parse(savedPositions));
     if (savedTransactions) setTransactions(JSON.parse(savedTransactions));
@@ -134,9 +120,9 @@ export default function SimulationPage() {
   // 保存数据到 localStorage
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    localStorage.setItem("simulationPositions_v2", JSON.stringify(positions));
-    localStorage.setItem("simulationTransactions_v2", JSON.stringify(transactions));
-    localStorage.setItem("simulationCashBalance_v2", cashBalance.toString());
+    localStorage.setItem("simulationPositions", JSON.stringify(positions));
+    localStorage.setItem("simulationTransactions", JSON.stringify(transactions));
+    localStorage.setItem("simulationCashBalance", cashBalance.toString());
   }, [positions, transactions, cashBalance]);
 
   // 引导步骤
@@ -148,15 +134,15 @@ export default function SimulationPage() {
       action: "领取资金",
     },
     {
-      icon: <Store className="w-16 h-16 text-macaron-green" />,
-      title: "🏪 浏览基金市场",
-      description: "我们有 19 只精选基金，涵盖货币、债券、指数、行业等多种类型！",
-      action: "进入市场",
+      icon: <Activity className="w-16 h-16 text-macaron-green" />,
+      title: "📊 真实市场数据",
+      description: "我们使用真实的 ETF 数据并进行平滑处理，让你体验真实的市场波动！",
+      action: "了解数据",
     },
     {
-      icon: <Activity className="w-16 h-16 text-macaron-purple" />,
-      title: "📊 查看真实数据",
-      description: "所有基金数据来自真实 ETF 市场，已进行平滑处理，让你体验真实波动！",
+      icon: <Wallet className="w-16 h-16 text-macaron-purple" />,
+      title: "💰 开始投资",
+      description: "选择不同类型的基金，观察真实的市场变化，学习理财知识！",
       action: "开始投资",
     },
   ];
@@ -166,7 +152,7 @@ export default function SimulationPage() {
       setGuideStep(guideStep + 1);
     } else {
       setShowGuide(false);
-      localStorage.setItem("hasSeenSimulationGuide_v2", "true");
+      localStorage.setItem("hasSeenSimulationGuide", "true");
     }
   };
 
@@ -217,7 +203,6 @@ export default function SimulationPage() {
           fundCode: fund.code,
           fundName: fund.name,
           fundType: fund.type,
-          riskLevel: fund.risk_level,
           amount,
           shares,
           currentNav,
@@ -286,34 +271,28 @@ export default function SimulationPage() {
     return "实现小梦想 🌟";
   };
 
-  // 过滤基金列表
-  const filteredFunds = fundsList.filter((fund) => {
-    const matchesSearch =
-      fund.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      fund.code.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSearch;
-  });
-
-  // 获取风险等级颜色
-  const getRiskColor = (level: string) => {
-    switch (level) {
-      case "R1": return "text-macaron-green";
-      case "R2": return "text-macaron-blue";
-      case "R3": return "text-macaron-yellow";
-      case "R4": return "text-macaron-pink";
-      default: return "text-gray-500";
-    }
-  };
-
-  // 获取风险等级文字
-  const getRiskLabel = (level: string) => {
-    switch (level) {
-      case "R1": return "低风险";
-      case "R2": return "中低风险";
-      case "R3": return "中等风险";
-      case "R4": return "较高风险";
-      default: return "未知";
-    }
+  // 基金类型配置
+  const fundTypeConfig: Record<string, { icon: string; color: string; description: string }> = {
+    "货币型": {
+      icon: "💰",
+      color: "from-macaron-green to-macaron-blue",
+      description: "几乎零风险，适合放零用钱",
+    },
+    "债券型": {
+      icon: "📈",
+      color: "from-macaron-blue to-macaron-purple",
+      description: "收益稳定，波动很小",
+    },
+    "指数型": {
+      icon: "📊",
+      color: "from-macaron-purple to-macaron-pink",
+      description: "长期看涨，定投首选",
+    },
+    "混合型": {
+      icon: "🎯",
+      color: "from-macaron-pink to-macaron-orange",
+      description: "股债平衡，攻守兼备",
+    },
   };
 
   return (
@@ -366,22 +345,12 @@ export default function SimulationPage() {
         </div>
       )}
 
-      <div className="container mx-auto px-4 md:px-6 py-8 max-w-6xl">
+      <div className="container mx-auto px-4 md:px-6 py-8 max-w-4xl">
         {/* 返回按钮 */}
-        <div className="flex items-center justify-between mb-6">
-          <Link href="/tools" className="inline-flex items-center gap-2 text-macaron-pink hover:text-macaron-purple transition-colors group">
-            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-            <span className="font-cute font-medium">返回工具箱</span>
-          </Link>
-
-          <Link
-            href="/tools/fund-market"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-macaron-pink text-white rounded-full hover:bg-macaron-pink/90 transition-colors"
-          >
-            <Store className="w-4 h-4" />
-            <span className="font-cute font-medium">基金市场</span>
-          </Link>
-        </div>
+        <Link href="/tools" className="inline-flex items-center gap-2 text-macaron-pink hover:text-macaron-purple transition-colors mb-6 group">
+          <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+          <span className="font-cute font-medium">返回工具箱</span>
+        </Link>
 
         {/* 标题区域 */}
         <div className="text-center mb-6">
@@ -396,7 +365,7 @@ export default function SimulationPage() {
           <p className="text-gray-600">基于真实市场数据，0成本练理财</p>
           {!loading && (
             <p className="text-xs text-macaron-pink mt-2">
-              数据来源: CMES ETF (已平滑处理) · 共 {fundsList.length} 只基金
+              数据来源: CMES ETF (已平滑处理) · 更新时间: {new Date().toLocaleDateString()}
             </p>
           )}
         </div>
@@ -484,7 +453,7 @@ export default function SimulationPage() {
             <Card className="border-2 border-macaron-pink/30">
               <CardContent className="p-6">
                 <h3 className="text-xl font-bold text-gray-800 mb-4 font-cute">
-                  🎯 选择基金买入
+                  🎯 选择基金类型
                 </h3>
 
                 {loading ? (
@@ -493,131 +462,56 @@ export default function SimulationPage() {
                   </div>
                 ) : (
                   <>
-                    {/* 基金搜索 */}
-                    <div className="relative mb-4">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <Input
-                        type="text"
-                        placeholder="搜索基金名称、代码..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onFocus={() => setShowFundSelector(true)}
-                        className="pl-10 h-12"
-                      />
-                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                      {Object.entries(fundsData).map(([key, fund]) => {
+                        const config = fundTypeConfig[fund.type] || {
+                          icon: "💰",
+                          color: "from-gray-400 to-gray-500",
+                          description: "暂无描述",
+                        };
 
-                    {/* 基金选择器 */}
-                    {showFundSelector && (
-                      <div className="border-2 border-macaron-pink/30 rounded-2xl p-4 mb-4 max-h-96 overflow-y-auto">
-                        <div className="flex justify-between items-center mb-3">
-                          <p className="text-sm text-gray-600">选择一只基金</p>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setShowFundSelector(false);
-                              setSearchQuery("");
-                            }}
+                        return (
+                          <div
+                            key={fund.code}
+                            onClick={() => setSelectedFund(fund.type)}
+                            className={cn(
+                              "p-4 rounded-2xl border-2 cursor-pointer transition-all hover:scale-105",
+                              selectedFund === fund.type
+                                ? "border-macaron-pink bg-macaron-pink/10"
+                                : "border-gray-200 hover:border-macaron-pink/50"
+                            )}
                           >
-                            关闭
-                          </Button>
-                        </div>
-
-                        {filteredFunds.length === 0 ? (
-                          <p className="text-center text-gray-400 py-4">没有找到匹配的基金</p>
-                        ) : (
-                          <div className="space-y-2">
-                            {filteredFunds.slice(0, 10).map((fund) => (
-                              <div
-                                key={fund.code}
-                                onClick={() => {
-                                  setSelectedFund(fund.code);
-                                  setShowFundSelector(false);
-                                  setSearchQuery("");
-                                }}
-                                className={cn(
-                                  "p-3 rounded-xl border-2 cursor-pointer transition-all hover:scale-[1.02]",
-                                  selectedFund === fund.code
-                                    ? "border-macaron-pink bg-macaron-pink/10"
-                                    : "border-gray-200 hover:border-macaron-pink/50"
-                                )}
-                              >
-                                <div className="flex items-center justify-between">
-                                  <div className="flex-1">
-                                    <h4 className="font-bold text-gray-800 mb-1">{fund.name}</h4>
-                                    <p className="text-xs text-gray-500 mb-2">{fund.desc}</p>
-                                    <div className="flex items-center gap-2">
-                                      <span className="px-2 py-1 rounded-full bg-macaron-cream text-xs text-gray-600">
-                                        {fund.type}
-                                      </span>
-                                      <span className={cn("text-xs font-medium", getRiskColor(fund.risk_level))}>
-                                        {getRiskLabel(fund.risk_level)}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <div className="text-right ml-4">
-                                    <p className="text-sm text-gray-500">净值</p>
-                                    <p className="font-bold text-gray-800">
-                                      {fund.latest_nav.toFixed(4)}
-                                    </p>
-                                    <p className={cn(
-                                      "text-sm font-bold",
-                                      fund.latest_change >= 0 ? "text-macaron-green" : "text-macaron-blue"
-                                    )}>
-                                      {fund.latest_change >= 0 ? "+" : ""}
-                                      {fund.latest_change.toFixed(2)}%
-                                    </p>
-                                  </div>
+                            <div className="flex items-start gap-3">
+                              <span className="text-4xl">{config.icon}</span>
+                              <div className="flex-1">
+                                <div className="flex items-center justify-between mb-1">
+                                  <h4 className="font-bold text-gray-800">{fund.name}</h4>
+                                  <span className={cn(
+                                    "text-sm font-bold",
+                                    fund.latest_change >= 0 ? "text-macaron-green" : "text-macaron-blue"
+                                  )}>
+                                    {fund.latest_change >= 0 ? "+" : ""}
+                                    {fund.latest_change.toFixed(2)}%
+                                  </span>
                                 </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* 已选择的基金 */}
-                    {selectedFund && fundsData[selectedFund] && (
-                      <Card className="border-2 border-macaron-green/30 bg-macaron-green/10 mb-4">
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1">
-                              <h4 className="font-bold text-gray-800 mb-1">{fundsData[selectedFund].name}</h4>
-                              <p className="text-xs text-gray-500">{fundsData[selectedFund].desc}</p>
-                              <div className="flex items-center gap-2 mt-2">
-                                <span className="px-2 py-1 rounded-full bg-macaron-cream text-xs text-gray-600">
-                                  {fundsData[selectedFund].type}
-                                </span>
-                                <span className={cn("text-xs font-medium", getRiskColor(fundsData[selectedFund].risk_level))}>
-                                  {getRiskLabel(fundsData[selectedFund].risk_level)}
-                                </span>
+                                <p className="text-xs text-gray-600 mb-2">{config.description}</p>
+                                <div className="flex items-center justify-between text-xs">
+                                  <span className="text-gray-500">
+                                    净值: {fund.latest_nav.toFixed(4)}
+                                  </span>
+                                  <span className="px-2 py-1 rounded-full bg-macaron-cream text-gray-600">
+                                    {fund.type}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-gray-400 mt-1">
+                                  跟踪: {fund.etf_name}
+                                </p>
                               </div>
                             </div>
-                            <div className="text-right ml-4">
-                              <p className="text-sm text-gray-500">当前净值</p>
-                              <p className="text-2xl font-bold text-gray-800">
-                                {fundsData[selectedFund].latest_nav.toFixed(4)}
-                              </p>
-                              <p className={cn(
-                                "text-sm font-bold",
-                                fundsData[selectedFund].latest_change >= 0 ? "text-macaron-green" : "text-macaron-blue"
-                              )}>
-                                {fundsData[selectedFund].latest_change >= 0 ? "+" : ""}
-                                {fundsData[selectedFund].latest_change.toFixed(2)}%
-                              </p>
-                            </div>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setSelectedFund("")}
-                              className="ml-2 text-gray-400 hover:text-gray-600"
-                            >
-                              ✕
-                            </Button>
                           </div>
-                        </CardContent>
-                      </Card>
-                    )}
+                        );
+                      })}
+                    </div>
 
                     {/* 买入金额 */}
                     <div className="space-y-4">
@@ -669,10 +563,10 @@ export default function SimulationPage() {
                   新手小贴士
                 </h3>
                 <ul className="space-y-2 text-sm text-gray-700">
-                  <li>💡 点击"基金市场"可以查看所有基金的详细信息和排行榜</li>
                   <li>💡 基金数据来自真实 ETF 市场，已进行平滑处理</li>
                   <li>💡 浮动收益不是实际收益，卖出后才会到账</li>
                   <li>💡 建议长期持有，不要频繁操作</li>
+                  <li>💡 止盈即落袋为安，适合赚够目标收益时操作</li>
                 </ul>
               </CardContent>
             </Card>
@@ -691,71 +585,76 @@ export default function SimulationPage() {
                 </CardContent>
               </Card>
             ) : (
-              positions.map((position) => (
-                <Card
-                  key={position.fundCode}
-                  className="border-2 hover:shadow-lg transition-all"
-                >
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-bold text-gray-800 text-lg">{position.fundName}</h4>
-                          <span className={cn("px-2 py-1 rounded-full text-xs font-medium", getRiskColor(position.riskLevel))}>
-                            {getRiskLabel(position.riskLevel)}
-                          </span>
+              positions.map((position) => {
+                const config = fundTypeConfig[position.fundType] || {
+                  icon: "💰",
+                  color: "from-gray-400 to-gray-500",
+                };
+
+                return (
+                  <Card
+                    key={position.fundCode}
+                    className="border-2 hover:shadow-lg transition-all"
+                  >
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <span className="text-4xl">{config.icon}</span>
+                          <div>
+                            <h4 className="font-bold text-gray-800">{position.fundName}</h4>
+                            <p className="text-xs text-gray-500">
+                              持有 {position.shares.toFixed(2)} 份 · 净值 {position.currentNav.toFixed(4)}
+                            </p>
+                          </div>
                         </div>
+                        <Button
+                          onClick={() => handleSell(position.fundCode)}
+                          size="sm"
+                          variant="outline"
+                          className="border-macaron-pink/50 text-macaron-pink hover:bg-macaron-pink hover:text-white"
+                        >
+                          卖出
+                        </Button>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-4">
+                        <div>
+                          <p className="text-xs text-gray-600">投入本金</p>
+                          <p className="text-lg font-bold text-gray-800">
+                            ¥{position.amount.toLocaleString()}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-600">当前市值</p>
+                          <p className="text-lg font-bold text-gray-800">
+                            ¥{(position.currentNav * position.shares).toLocaleString()}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-600">浮动收益</p>
+                          <p className={cn(
+                            "text-lg font-bold",
+                            position.profitLoss >= 0 ? "text-macaron-green" : "text-macaron-blue"
+                          )}>
+                            {position.profitLoss >= 0 ? "+" : ""}
+                            ¥{Math.round(position.profitLoss).toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-3 pt-3 border-t border-gray-100">
                         <p className="text-xs text-gray-500">
-                          持有 {position.shares.toFixed(2)} 份 · 净值 {position.currentNav.toFixed(4)}
+                          收益率：{position.profitLossPercent >= 0 ? "+" : ""}
+                          {position.profitLossPercent.toFixed(2)}%
+                          {position.profitLoss >= 0 && " 📈"}
+                          {position.profitLoss < 0 && " 📉"}
+                          · {getProfitDescription(position.profitLoss)}
                         </p>
                       </div>
-                      <Button
-                        onClick={() => handleSell(position.fundCode)}
-                        size="sm"
-                        variant="outline"
-                        className="border-macaron-pink/50 text-macaron-pink hover:bg-macaron-pink hover:text-white"
-                      >
-                        卖出
-                      </Button>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-4">
-                      <div>
-                        <p className="text-xs text-gray-600">投入本金</p>
-                        <p className="text-lg font-bold text-gray-800">
-                          ¥{position.amount.toLocaleString()}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600">当前市值</p>
-                        <p className="text-lg font-bold text-gray-800">
-                          ¥{(position.currentNav * position.shares).toLocaleString()}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600">浮动收益</p>
-                        <p className={cn(
-                          "text-lg font-bold",
-                          position.profitLoss >= 0 ? "text-macaron-green" : "text-macaron-blue"
-                        )}>
-                          {position.profitLoss >= 0 ? "+" : ""}
-                          ¥{Math.round(position.profitLoss).toLocaleString()}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="mt-3 pt-3 border-t border-gray-100">
-                      <p className="text-xs text-gray-500">
-                        收益率：{position.profitLossPercent >= 0 ? "+" : ""}
-                        {position.profitLossPercent.toFixed(2)}%
-                        {position.profitLoss >= 0 && " 📈"}
-                        {position.profitLoss < 0 && " 📉"}
-                        · {getProfitDescription(position.profitLoss)}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
+                    </CardContent>
+                  </Card>
+                );
+              })
             )}
           </div>
         )}
