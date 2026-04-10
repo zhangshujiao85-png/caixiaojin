@@ -60,7 +60,7 @@ export function DailyCheckInModal({ open, onOpenChange }: DailyCheckInModalProps
     checkIn,
     checkInStreak,
     toggleFavorite,
-    isFavorite,
+    favoriteQuotes,
     getTodayQuote,
     hasCheckedToday,
   } = useDailyCheckInStore();
@@ -71,7 +71,7 @@ export function DailyCheckInModal({ open, onOpenChange }: DailyCheckInModalProps
   const [hasCheckedIn, setHasCheckedIn] = useState(false);
 
   const todayQuote = getTodayQuote();
-  const favorite = isFavorite(todayQuote.id);
+  const favorite = favoriteQuotes.includes(todayQuote.id);
   const checkedToday = hasCheckedToday();
 
   // 获取今日日期显示
@@ -228,9 +228,14 @@ export function DailyCheckInModal({ open, onOpenChange }: DailyCheckInModalProps
             <div className="bg-gradient-to-br from-macaron-cream to-macaron-pink/10 rounded-2xl p-6 border-2 border-macaron-pink/20 relative">
               {/* 收藏按钮 */}
               <button
-                onClick={() => toggleFavorite(todayQuote.id)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('收藏按钮点击', todayQuote.id, '当前收藏状态:', favorite);
+                  toggleFavorite(todayQuote.id);
+                }}
                 className={cn(
-                  "absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-md",
+                  "absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-md cursor-pointer hover:scale-110 active:scale-95 z-10",
                   favorite
                     ? "bg-gradient-to-br from-macaron-pink to-macaron-purple text-white"
                     : "bg-white/80 text-gray-400 hover:text-macaron-pink hover:bg-white"

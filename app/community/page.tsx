@@ -24,8 +24,22 @@ const mockPosts = [
       username: "小财友",
     },
     likeCount: 234,
-    commentCount: 45,
+    commentCount: 2,
     createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+    comments: [
+      {
+        id: "c1",
+        content: "太棒了！向你学习～",
+        user: { id: "user2", username: "理财达人" },
+        createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: "c2",
+        content: "坚持就是胜利，加油！",
+        user: { id: "user3", username: "定投小能手" },
+        createdAt: new Date(Date.now() - 0.5 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+    ],
   },
   {
     id: "2",
@@ -38,8 +52,16 @@ const mockPosts = [
       username: "理财小白",
     },
     likeCount: 156,
-    commentCount: 67,
+    commentCount: 1,
     createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+    comments: [
+      {
+        id: "c3",
+        content: "建议从指数基金开始，比较稳健",
+        user: { id: "user1", username: "小财友" },
+        createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+    ],
   },
   {
     id: "3",
@@ -52,8 +74,9 @@ const mockPosts = [
       username: "稳稳的幸福",
     },
     likeCount: 445,
-    commentCount: 89,
+    commentCount: 0,
     createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+    comments: [],
   },
   {
     id: "4",
@@ -66,8 +89,9 @@ const mockPosts = [
       username: "长期主义者",
     },
     likeCount: 567,
-    commentCount: 123,
+    commentCount: 0,
     createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+    comments: [],
   },
 ];
 

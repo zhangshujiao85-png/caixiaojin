@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowLeft, Heart, MessageSquare, Calendar, UserCheck, UserPlus } from "lucide-react";
+import { ArrowLeft, Heart, MessageSquare, Calendar, UserCheck, UserPlus, Send, X } from "lucide-react";
 import { PostCard, Post } from "@/components/community/PostCard";
 import { useAuth } from "@/store/useAuth";
 
@@ -17,11 +17,13 @@ export function UserProfilePage({ userId }: UserProfilePageProps) {
   const router = useRouter();
   const { user: currentUser, isAuthenticated } = useAuth();
   const [isFollowing, setIsFollowing] = useState(false);
+  const [showMessageDialog, setShowMessageDialog] = useState(false);
+  const [messageContent, setMessageContent] = useState("");
 
   // Mock user data
   const mockUsers: Record<string, any> = {
-    user1: {
-      id: "user1",
+    "1": {
+      id: "1",
       username: "小财友",
       bio: "理财新手，正在学习中~",
       joinDate: "2024-01-15",
@@ -31,33 +33,44 @@ export function UserProfilePage({ userId }: UserProfilePageProps) {
       postCount: 12,
       avatar: null,
     },
-    user2: {
-      id: "user2",
-      username: "理财小白",
-      bio: "新手求带！一起学习理财",
-      joinDate: "2024-01-10",
-      level: 2,
-      followerCount: 45,
-      followingCount: 89,
-      postCount: 8,
-      avatar: null,
-    },
-    user3: {
-      id: "user3",
-      username: "稳稳的幸福",
+    "2": {
+      id: "2",
+      username: "理财达人",
       bio: "稳健投资，长期持有",
-      joinDate: "2024-01-01",
+      joinDate: "2024-01-10",
       level: 5,
       followerCount: 256,
       followingCount: 34,
       postCount: 23,
       avatar: null,
     },
-    user4: {
-      id: "user4",
-      username: "长期主义者",
-      bio: "相信复利的力量",
+    "3": {
+      id: "3",
+      username: "定投小能手",
+      bio: "相信定投的力量",
+      joinDate: "2024-01-01",
+      level: 4,
+      followerCount: 189,
+      followingCount: 45,
+      postCount: 18,
+      avatar: null,
+    },
+    "4": {
+      id: "4",
+      username: "投资新星",
+      bio: "学习理财的新手",
       joinDate: "2023-12-20",
+      level: 2,
+      followerCount: 67,
+      followingCount: 78,
+      postCount: 6,
+      avatar: null,
+    },
+    "5": {
+      id: "5",
+      username: "稳健理财",
+      bio: "稳扎稳打，慢慢积累",
+      joinDate: "2023-12-15",
       level: 6,
       followerCount: 312,
       followingCount: 28,
@@ -68,61 +81,74 @@ export function UserProfilePage({ userId }: UserProfilePageProps) {
 
   // Mock posts data
   const mockPostsByUser: Record<string, Post[]> = {
-    user1: [
+    "1": [
       {
         id: "1",
         title: "我的定投日记：坚持3个月啦",
         content: "从3个月前开始定投，每个月500块，虽然收益不多，但看到账户慢慢变多很有成就感！坚持就是胜利～",
         images: [],
         category: "定投心得",
-        user: { id: "user1", username: "小财友" },
+        user: { id: "1", username: "小财友" },
         likeCount: 234,
         commentCount: 45,
         createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
       },
     ],
-    user2: [
+    "2": [
       {
         id: "2",
-        title: "新手第一次买基金，求指点",
-        content: "刚刚入手了第一只基金，有点紧张又有点期待。大家都定投的哪些呀？求推荐～",
+        title: "稳健投资策略分享",
+        content: "分享一下我的稳健投资策略：分散投资、长期持有、定期调整。这样既能降低风险，又能获得稳定收益。",
         images: [],
-        category: "新手提问",
-        user: { id: "user2", username: "理财小白" },
-        likeCount: 156,
+        category: "经验分享",
+        user: { id: "2", username: "理财达人" },
+        likeCount: 189,
         commentCount: 67,
         createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
       },
     ],
-    user3: [
+    "3": [
       {
         id: "3",
-        title: "止盈了！半年赚了15%",
-        content: "今天止盈了一部分，虽然不多，但这是我的第一笔收益！",
+        title: "定投3个月心得",
+        content: "坚持定投3个月了，虽然收益不多，但是学会了坚持和耐心。理财最重要的是心态！",
         images: [],
-        category: "收益分享",
-        user: { id: "user3", username: "稳稳的幸福" },
-        likeCount: 445,
-        commentCount: 89,
+        category: "定投心得",
+        user: { id: "3", username: "定投小能手" },
+        likeCount: 145,
+        commentCount: 34,
         createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
       },
     ],
-    user4: [
+    "4": [
       {
         id: "4",
-        title: "市场大跌，我是这么做的",
-        content: "这几天市场跌了不少，我看到很多人都在恐慌。其实我是这样做的：继续定投，不停止...",
+        title: "新手求助：基金怎么选",
+        content: "刚接触理财，想问问大家怎么选基金？有没有什么好的推荐？",
         images: [],
-        category: "经验分享",
-        user: { id: "user4", username: "长期主义者" },
-        likeCount: 567,
+        category: "新手提问",
+        user: { id: "4", username: "投资新星" },
+        likeCount: 89,
         commentCount: 123,
         createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
       },
     ],
+    "5": [
+      {
+        id: "5",
+        title: "我的理财之路",
+        content: "理财一年了，从最初的小白到现在的稳健投资，收获满满。分享一下我的经验：耐心、坚持、学习！",
+        images: [],
+        category: "经验分享",
+        user: { id: "5", username: "稳健理财" },
+        likeCount: 267,
+        commentCount: 89,
+        createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
+      },
+    ],
   };
 
-  const profileUser = mockUsers[userId] || mockUsers.user1;
+  const profileUser = mockUsers[userId] || mockUsers["1"];
   const userPosts = mockPostsByUser[userId] || [];
 
   // 检查是否已关注
@@ -197,27 +223,44 @@ export function UserProfilePage({ userId }: UserProfilePageProps) {
 
                   {/* 关注按钮 */}
                   {!isOwnProfile && (
-                    <Button
-                      onClick={handleFollowToggle}
-                      variant={isFollowing ? "outline" : "default"}
-                      className={
-                        isFollowing
-                          ? "border-macaron-pink/30 text-macaron-pink hover:bg-macaron-pink/10"
-                          : "bg-macaron-pink hover:bg-macaron-pink/90"
-                      }
-                    >
-                      {isFollowing ? (
-                        <>
-                          <UserCheck className="w-4 h-4 mr-2" />
-                          已关注
-                        </>
-                      ) : (
-                        <>
-                          <UserPlus className="w-4 h-4 mr-2" />
-                          关注
-                        </>
-                      )}
-                    </Button>
+                    <div className="flex gap-2">
+                      {/* 私信按钮 */}
+                      <Button
+                        onClick={() => {
+                          if (!isAuthenticated) {
+                            router.push("/auth");
+                            return;
+                          }
+                          setShowMessageDialog(true);
+                        }}
+                        className="bg-macaron-pink hover:bg-macaron-pink/90"
+                      >
+                        <MessageSquare className="w-4 h-4 mr-2" />
+                        私信
+                      </Button>
+
+                      <Button
+                        onClick={handleFollowToggle}
+                        variant={isFollowing ? "outline" : "default"}
+                        className={
+                          isFollowing
+                            ? "border-macaron-pink/30 text-macaron-pink hover:bg-macaron-pink/10"
+                            : "bg-macaron-pink hover:bg-macaron-pink/90"
+                        }
+                      >
+                        {isFollowing ? (
+                          <>
+                            <UserCheck className="w-4 h-4 mr-2" />
+                            已关注
+                          </>
+                        ) : (
+                          <>
+                            <UserPlus className="w-4 h-4 mr-2" />
+                            关注
+                          </>
+                        )}
+                      </Button>
+                    </div>
                   )}
                 </div>
 
@@ -270,6 +313,82 @@ export function UserProfilePage({ userId }: UserProfilePageProps) {
           )}
         </div>
       </div>
+
+      {/* 私信对话框 */}
+      {showMessageDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl max-w-lg w-full shadow-2xl animate-in fade-in zoom-in duration-300">
+            {/* 头部 */}
+            <div className="p-6 bg-gradient-to-r from-macaron-blue to-macaron-purple rounded-t-3xl">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-bold text-white font-cute flex items-center gap-2">
+                    <MessageSquare className="w-5 h-5" />
+                    发送私信
+                  </h3>
+                  <p className="text-white/90 text-sm mt-1">
+                    给 {profileUser.username} 发送消息
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowMessageDialog(false);
+                    setMessageContent("");
+                  }}
+                  className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* 内容 */}
+            <div className="p-6">
+              <textarea
+                value={messageContent}
+                onChange={(e) => setMessageContent(e.target.value)}
+                placeholder="说点什么..."
+                className="w-full h-32 p-4 border-2 border-macaron-blue/20 rounded-2xl focus:outline-none focus:border-macaron-blue/50 resize-none"
+                maxLength={500}
+              />
+              <p className="text-xs text-gray-500 mt-2 text-right">
+                {messageContent.length}/500
+              </p>
+            </div>
+
+            {/* 底部按钮 */}
+            <div className="p-6 border-t border-gray-100 flex gap-3">
+              <Button
+                onClick={() => {
+                  setShowMessageDialog(false);
+                  setMessageContent("");
+                }}
+                variant="outline"
+                className="flex-1"
+              >
+                取消
+              </Button>
+              <Button
+                onClick={() => {
+                  // 这里可以添加发送消息的逻辑
+                  console.log("发送私信给", userId, ":", messageContent);
+
+                  // 模拟发送成功
+                  alert("消息已发送！");
+
+                  // 关闭对话框并清空内容
+                  setShowMessageDialog(false);
+                  setMessageContent("");
+                }}
+                className="flex-1 bg-macaron-blue hover:bg-macaron-blue/90"
+              >
+                <Send className="w-4 h-4 mr-2" />
+                发送
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

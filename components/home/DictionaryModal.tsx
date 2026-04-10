@@ -123,7 +123,7 @@ export function DictionaryModal({ open, onOpenChange }: DictionaryModalProps) {
               </div>
             </div>
             <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2 font-cute">
-              📖 小白术语词典
+              📖 术语词典
             </h2>
             <p className="text-gray-600 text-sm md:text-base">
               不懂术语？用大白话讲给你听~

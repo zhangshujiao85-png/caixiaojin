@@ -23,7 +23,7 @@ export function DictionaryCard({ onClick }: DictionaryCardProps) {
             </div>
             <div>
               <h3 className="font-bold text-gray-800 text-base font-cute flex items-center gap-2">
-                小白术语词典
+                术语词典
                 <BookOpen className="w-4 h-4 text-macaron-blue" />
               </h3>
               <p className="text-xs text-gray-600">

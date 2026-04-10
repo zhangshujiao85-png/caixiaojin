@@ -1,45 +1,33 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Music, BookOpen, Heart, TrendingUp, ArrowRight } from "lucide-react";
+import { X, Music, BookOpen, Heart, TrendingUp, ArrowRight, CheckCircle2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { anxietyReliefArticles, AnxietyReliefArticle } from "@/data/anxietyReliefContent";
+import { userStories, UserStory } from "@/data/realUserStories";
 
 interface InvestmentAnxietyProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const investmentQuotes = [
-  "复利的奇迹，不只存在于金钱，也存在于你每日的微小进步。",
-  "分散投资，就像不要把你的幸福寄托在单一件事上。",
-  "市场波动如四季，你的核心配置就是那件最耐穿的风衣。",
-  "设定财务目标，就是为你的人生画一张航海图。",
-  "应急金不是数字，是你生活中最踏实的一份\"保险\"。",
-  "长期主义，是相信时间会站在理性与纪律这一边。",
-  "消费是满足现在，投资是照顾未来。聪明的你，懂得平衡。",
-  "了解自己的风险偏好，和了解自己的皮肤属性一样重要。",
-  "记账不是束缚，是让你看清钱去往何处，让花销配得上你的努力。",
-  "收益率就像天气，无法控制，但你可以决定自己带什么伞。"
-];
-
 export function InvestmentAnxietyModal({ open, onOpenChange }: InvestmentAnxietyProps) {
   const [anxietyLevel, setAnxietyLevel] = useState(50);
   const [showResult, setShowResult] = useState(false);
-  const [selectedArticle, setSelectedArticle] = useState<AnxietyReliefArticle | null>(null);
-  const [randomQuote, setRandomQuote] = useState("");
+  const [selectedStory, setSelectedStory] = useState<UserStory | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
 
-  // Select random quote when modal opens
+  // Debug log to verify new code is running
+  console.log('InvestmentAnxietyModal rendered, userStories count:', userStories.length);
+
+  // Reset state when modal opens
   useEffect(() => {
     if (open) {
-      const randomIndex = Math.floor(Math.random() * investmentQuotes.length);
-      setRandomQuote(investmentQuotes[randomIndex]);
-      setIsFavorite(false); // Reset favorite state
+      console.log('Modal opened, new code is running!');
+      setIsFavorite(false);
     }
   }, [open]);
 
@@ -54,16 +42,25 @@ export function InvestmentAnxietyModal({ open, onOpenChange }: InvestmentAnxiety
 
   const handleSubmitAnxiety = () => {
     setShowResult(true);
-    // 根据焦虑值选择合适的文章
-    const suitableArticles = anxietyReliefArticles.filter(
-      article => article.type === 'investment' &&
-      (article.level === 'any' || article.level === 'low' || article.level === 'high')
+
+    // 根据焦虑值确定焦虑级别
+    let targetLevel: 'low' | 'high' = 'low';
+    if (anxietyLevel <= 50) {
+      targetLevel = 'low';
+    } else {
+      targetLevel = 'high';
+    }
+
+    // 筛选投资焦虑故事，匹配焦虑级别
+    const suitableStories = userStories.filter(
+      story => story.type === 'investment' &&
+      (story.anxietyLevel === targetLevel || story.anxietyLevel === 'any')
     );
 
-    if (suitableArticles.length > 0) {
-      // 随机选择一篇
-      const randomIndex = Math.floor(Math.random() * suitableArticles.length);
-      setSelectedArticle(suitableArticles[randomIndex]);
+    if (suitableStories.length > 0) {
+      // 随机选择一个故事
+      const randomIndex = Math.floor(Math.random() * suitableStories.length);
+      setSelectedStory(suitableStories[randomIndex]);
     }
   };
 
@@ -79,7 +76,7 @@ export function InvestmentAnxietyModal({ open, onOpenChange }: InvestmentAnxiety
 
   const handleReset = () => {
     setShowResult(false);
-    setSelectedArticle(null);
+    setSelectedStory(null);
     setAnxietyLevel(50);
   };
 
@@ -154,54 +151,83 @@ export function InvestmentAnxietyModal({ open, onOpenChange }: InvestmentAnxiety
             <>
               {/* 结果展示 */}
               <div className="space-y-6">
-                {selectedArticle && (
+                {selectedStory && (
                   <Card className="border-2 border-macaron-purple/30 bg-white/80 backdrop-blur-sm">
                     <CardContent className="p-6">
-                      <div className="flex items-start gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-full bg-macaron-purple flex items-center justify-center flex-shrink-0">
-                          {selectedArticle.level === 'low' ? (
-                            <BookOpen className="w-5 h-5 text-white" />
-                          ) : selectedArticle.level === 'high' ? (
-                            <Music className="w-5 h-5 text-white" />
-                          ) : (
-                            <Heart className="w-5 h-5 text-white" />
-                          )}
+                      {/* 用户信息 */}
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-macaron-pink to-macaron-purple flex items-center justify-center text-white font-bold text-lg shadow-md">
+                          {selectedStory.avatarLetter}
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <h3 className="text-lg font-bold text-gray-800">
-                              {selectedArticle.title}
-                            </h3>
-                            <Badge className="bg-macaron-purple/20 text-macaron-purple hover:bg-macaron-purple/30">
-                              {selectedArticle.category}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-gray-500">点击标签可查看更多相关文章</p>
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            {selectedArticle.tags.map((tag) => (
-                              <Badge
-                                key={tag}
-                                variant="secondary"
-                                className="text-xs"
-                              >
-                                {tag}
-                              </Badge>
-                            ))}
-                          </div>
+                        <div>
+                          <h3 className="font-bold text-gray-800">{selectedStory.username}</h3>
+                          <p className="text-xs text-gray-500">
+                            ❤️ {selectedStory.likes} 人点赞 · {selectedStory.createdAt}
+                          </p>
                         </div>
                       </div>
 
-                      <div className="prose prose prose-sm max-w-none">
+                      {/* 故事标题 */}
+                      <h4 className="text-lg font-bold text-gray-800 mb-3">
+                        {selectedStory.title}
+                      </h4>
+
+                      {/* 故事内容 */}
+                      <div className="prose prose-sm max-w-none mb-4">
                         <p className="whitespace-pre-line text-gray-700 leading-relaxed">
-                          {selectedArticle.content}
+                          {selectedStory.story}
                         </p>
+                      </div>
+
+                      {/* 可执行步骤 */}
+                      <div className="bg-macaron-cream/50 rounded-xl p-4 border-2 border-macaron-yellow/30 mb-4">
+                        <h5 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                          <CheckCircle2 className="w-5 h-5 text-macaron-green" />
+                          TA 是这样做的：
+                        </h5>
+                        <ol className="space-y-2">
+                          {selectedStory.actions.map((action, index) => (
+                            <li key={index} className="flex gap-3 text-sm text-gray-700">
+                              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-macaron-pink text-white flex items-center justify-center text-xs font-bold">
+                                {index + 1}
+                              </span>
+                              <span className="flex-1 pt-0.5">{action}</span>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+
+                      {/* 专业见解 */}
+                      {selectedStory.professionalInsight && (
+                        <div className="bg-gradient-to-br from-macaron-purple/10 to-macaron-blue/10 rounded-xl p-4 border-2 border-macaron-purple/30">
+                          <h5 className="font-bold text-gray-800 mb-2 flex items-center gap-2">
+                            <BookOpen className="w-4 h-4 text-macaron-purple" />
+                            专业洞察
+                          </h5>
+                          <p className="text-sm text-gray-700 leading-relaxed">
+                            {selectedStory.professionalInsight}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* 标签 */}
+                      <div className="flex flex-wrap gap-2 mt-4">
+                        {selectedStory.tags.map((tag) => (
+                          <Badge
+                            key={tag}
+                            variant="secondary"
+                            className="text-xs"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
                       </div>
                     </CardContent>
                   </Card>
                 )}
 
                 {/* 金句标语 */}
-                <div className="text-center -mt-6 mb-8">
+                <div className="text-center -mt-4 mb-6">
                   <p className="text-sm text-macaron-purple italic">
                     ✨ 今天我的投资焦虑值是 <span className="text-lg font-bold">{anxietyLevel}</span>，但我选择把它换算成一次深度学习。
                   </p>
@@ -219,8 +245,8 @@ export function InvestmentAnxietyModal({ open, onOpenChange }: InvestmentAnxiety
                     />
                   </button>
 
-                  <p className="text-lg font-medium bg-gradient-to-r from-macaron-purple to-macaron-pink bg-clip-text text-transparent leading-relaxed mb-4">
-                    {randomQuote}
+                  <p className="text-base font-medium bg-gradient-to-r from-macaron-purple to-macaron-pink bg-clip-text text-transparent leading-relaxed mb-4">
+                    "投资最重要的不是预测未来，而是做好自己能掌控的事。"
                   </p>
 
                   <Button

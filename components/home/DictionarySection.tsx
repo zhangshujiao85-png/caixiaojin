@@ -91,7 +91,7 @@ export function DictionarySection() {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <BookOpen className="w-5 h-5 text-macaron-purple" />
-          <h3 className="font-bold text-gray-800 font-cute">小白术语词典 📖</h3>
+          <h3 className="font-bold text-gray-800 font-cute">术语词典 📖</h3>
         </div>
       </div>
 
