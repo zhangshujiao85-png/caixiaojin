@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
@@ -68,7 +68,7 @@ interface Position {
   profitLossPercent: number;
 }
 
-export default function SimulationPage() {
+function SimulationPageContent() {
   const searchParams = useSearchParams();
   const preselectedFund = searchParams.get("fund");
 
@@ -818,5 +818,21 @@ export default function SimulationPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// 用 Suspense 包裹组件以支持静态导出
+export default function SimulationPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-macaron-pink mx-auto mb-4"></div>
+          <p className="text-gray-600">加载中...</p>
+        </div>
+      </div>
+    }>
+      <SimulationPageContent />
+    </Suspense>
   );
 }
