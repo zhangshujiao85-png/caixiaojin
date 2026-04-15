@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Music, BookOpen, Heart, TrendingUp, ArrowRight, CheckCircle2 } from "lucide-react";
+import { X, Music, BookOpen, Heart, TrendingUp, ArrowRight, CheckCircle2, ArrowLeft } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -12,9 +12,10 @@ import { userStories, UserStory } from "@/data/realUserStories";
 interface InvestmentAnxietyProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onBack?: () => void;
 }
 
-export function InvestmentAnxietyModal({ open, onOpenChange }: InvestmentAnxietyProps) {
+export function InvestmentAnxietyModal({ open, onOpenChange, onBack }: InvestmentAnxietyProps) {
   const [anxietyLevel, setAnxietyLevel] = useState(50);
   const [showResult, setShowResult] = useState(false);
   const [selectedStory, setSelectedStory] = useState<UserStory | null>(null);
@@ -87,11 +88,23 @@ export function InvestmentAnxietyModal({ open, onOpenChange }: InvestmentAnxiety
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-macaron-purple via-macaron-cream to-macaron-pink">
         <DialogHeader>
           <DialogTitle className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <TrendingUp className="w-6 h-6 text-macaron-purple" />
-              <h2 className="text-2xl font-bold text-gray-800 font-cute">
-                投资焦虑补丸
-              </h2>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                {onBack && (
+                  <button
+                    onClick={onBack}
+                    className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition-colors"
+                  >
+                    <ArrowLeft className="w-5 h-5" />
+                  </button>
+                )}
+                <div className="flex items-center justify-center gap-2 flex-1">
+                  <TrendingUp className="w-6 h-6 text-macaron-purple" />
+                  <h2 className="text-2xl font-bold text-gray-800 font-cute">
+                    投资焦虑补丸
+                  </h2>
+                </div>
+              </div>
             </div>
             <p className="text-sm text-gray-600 text-center mb-4">
               把心跳变成知识，把恐惧变成策略 💫

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Plus, Trash2, Calendar, TrendingUp } from "lucide-react";
+import { X, Plus, Trash2, Calendar, TrendingUp, ArrowLeft } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -13,9 +13,10 @@ import { cn } from "@/lib/utils";
 interface EmotionalLedgerModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onBack?: () => void;
 }
 
-export function EmotionalLedgerModal({ open, onOpenChange }: EmotionalLedgerModalProps) {
+export function EmotionalLedgerModal({ open, onOpenChange, onBack }: EmotionalLedgerModalProps) {
   const [ledgerAnxietyLevel, setLedgerAnxietyLevel] = useState(50);
   const [feeling, setFeeling] = useState("");
   const [action, setAction] = useState("");
@@ -53,11 +54,23 @@ export function EmotionalLedgerModal({ open, onOpenChange }: EmotionalLedgerModa
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-macaron-blue via-macaron-cream to-macaron-purple">
         <DialogHeader>
           <DialogTitle className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <Calendar className="w-6 h-6 text-macaron-blue" />
-              <h2 className="text-2xl font-bold text-gray-800 font-cute">
-                情绪笔记本 📔
-              </h2>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                {onBack && (
+                  <button
+                    onClick={onBack}
+                    className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition-colors"
+                  >
+                    <ArrowLeft className="w-5 h-5" />
+                  </button>
+                )}
+                <div className="flex items-center justify-center gap-2 flex-1">
+                  <Calendar className="w-6 h-6 text-macaron-blue" />
+                  <h2 className="text-2xl font-bold text-gray-800 font-cute">
+                    情绪笔记本 📔
+                  </h2>
+                </div>
+              </div>
             </div>
             <p className="text-sm text-gray-600 text-center px-4 leading-relaxed">
               你的专属小树洞 🌳<br />

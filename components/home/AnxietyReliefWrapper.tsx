@@ -181,6 +181,7 @@ export function AnxietyReliefWrapper({ open, onOpenChange }: AnxietyReliefWrappe
             onOpenChange(false);
           }
         }}
+        onBack={() => setSelectedType(null)}
       />
 
       {/* 财务焦虑弹窗 */}
@@ -192,6 +193,7 @@ export function AnxietyReliefWrapper({ open, onOpenChange }: AnxietyReliefWrappe
             onOpenChange(false);
           }
         }}
+        onBack={() => setSelectedType(null)}
       />
 
       {/* 情绪账本弹窗 */}
@@ -203,6 +205,7 @@ export function AnxietyReliefWrapper({ open, onOpenChange }: AnxietyReliefWrappe
             onOpenChange(false);
           }
         }}
+        onBack={() => setSelectedType(null)}
       />
     </>
   );

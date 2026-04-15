@@ -26,8 +26,8 @@ const defaultSavingItems: SavingItem[] = [
     description: "每次喝奶茶的花费...",
     price: 17,
     unit: "杯",
-    frequencyLabel: "每天次数",
-    multiplier: 30,
+    frequencyLabel: "每月次数",
+    multiplier: 1,
   },
   {
     id: "takeout",
@@ -36,8 +36,8 @@ const defaultSavingItems: SavingItem[] = [
     description: "每次点外卖的花费...",
     price: 20,
     unit: "顿",
-    frequencyLabel: "每周顿数",
-    multiplier: 4,
+    frequencyLabel: "每月次数",
+    multiplier: 1,
   },
   {
     id: "shopping",
@@ -56,8 +56,8 @@ const defaultSavingItems: SavingItem[] = [
     description: "每次打车的花费...",
     price: 26,
     unit: "次",
-    frequencyLabel: "每周次数",
-    multiplier: 4,
+    frequencyLabel: "每月次数",
+    multiplier: 1,
   },
   {
     id: "game",
@@ -135,8 +135,6 @@ export function SavingExperimentTab() {
   };
 
   const getFrequencyLabel = (multiplier: number) => {
-    if (multiplier >= 25) return "每天次数";
-    if (multiplier >= 4) return "每周次数";
     return "每月次数";
   };
 

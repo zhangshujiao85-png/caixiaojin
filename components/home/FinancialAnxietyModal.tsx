@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Heart, Sparkles, ArrowRight, Plus, Trash2, CheckCircle2, BookOpen } from "lucide-react";
+import { X, Heart, Sparkles, ArrowRight, Plus, Trash2, CheckCircle2, BookOpen, ArrowLeft } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 interface FinancialAnxietyProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onBack?: () => void;
 }
 
 const anxietySources = [
@@ -29,7 +30,7 @@ const anxietySources = [
     emoji: '🐷',
     title: '存不下钱',
     description: '想存但总是存不下来',
-    category: '存不下钱',
+    category: '负债压力',
   },
   {
     id: 'unemployment',
@@ -47,7 +48,7 @@ const anxietySources = [
   },
 ];
 
-export function FinancialAnxietyModal({ open, onOpenChange }: FinancialAnxietyProps) {
+export function FinancialAnxietyModal({ open, onOpenChange, onBack }: FinancialAnxietyProps) {
   const [selectedSource, setSelectedSource] = useState<string | null>(null);
   const [selectedStory, setSelectedStory] = useState<UserStory | null>(null);
   const [showTreeHole, setShowTreeHole] = useState(false);
@@ -105,11 +106,23 @@ export function FinancialAnxietyModal({ open, onOpenChange }: FinancialAnxietyPr
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-macaron-green via-macaron-cream to-macaron-blue">
         <DialogHeader>
           <DialogTitle className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <Heart className="w-6 h-6 text-macaron-pink" />
-              <h2 className="text-2xl font-bold text-gray-800 font-cute">
-                财务焦虑？我们来做个心理按摩 💆
-              </h2>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                {onBack && (
+                  <button
+                    onClick={onBack}
+                    className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition-colors"
+                  >
+                    <ArrowLeft className="w-5 h-5" />
+                  </button>
+                )}
+                <div className="flex items-center justify-center gap-2 flex-1">
+                  <Heart className="w-6 h-6 text-macaron-pink" />
+                  <h2 className="text-2xl font-bold text-gray-800 font-cute">
+                    财务焦虑？我们来做个心理按摩 💆
+                  </h2>
+                </div>
+              </div>
             </div>
             <p className="text-sm text-gray-600 text-center">
               把焦虑变成小行动，每天进步一点点 ✨
