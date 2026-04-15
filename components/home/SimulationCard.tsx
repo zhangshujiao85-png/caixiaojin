@@ -175,7 +175,7 @@ export function SimulationModal({ open, onOpenChange }: SimulationModalProps) {
   useEffect(() => {
     const loadFundsData = async () => {
       try {
-        const response = await fetch("/funds.json");
+        const response = await fetch("/caixiaojin/funds.json");
         const data = await response.json();
 
         if (data && data.funds) {

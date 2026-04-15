@@ -93,14 +93,14 @@ function SimulationPageContent() {
   useEffect(() => {
     const loadFundsData = async () => {
       try {
-        const response = await fetch("/api/funds");
+        const response = await fetch("/caixiaojin/funds.json");
         const result = await response.json();
 
-        if (result.success && result.data.funds) {
-          setFundsData(result.data.funds);
-          setFundsList(Object.values(result.data.funds));
+        if (result && result.funds) {
+          setFundsData(result.funds);
+          setFundsList(Object.values(result.funds));
         } else {
-          console.error("获取基金数据失败:", result.error);
+          console.error("获取基金数据失败: 数据格式不正确");
         }
       } catch (error) {
         console.error("加载基金数据出错:", error);
